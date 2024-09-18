@@ -1676,18 +1676,6 @@ export class Gutter {
             this.genWidths([nodeElement], protyle);
         }
         window.siyuan.menus.menu.append(new MenuItem({type: "separator"}).element);
-        if (!["NodeThematicBreak", "NodeBlockQueryEmbed", "NodeIFrame", "NodeHTMLBlock", "NodeWidget", "NodeVideo", "NodeAudio"].includes(type) &&
-            getContenteditableElement(nodeElement)?.textContent.trim() !== "" &&
-            (type !== "NodeCodeBlock" || (type === "NodeCodeBlock" && !nodeElement.getAttribute("data-subtype")))) {
-            window.siyuan.menus.menu.append(new MenuItem({
-                label: window.siyuan.languages.wechatReminder,
-                icon: "iconMp",
-                ignore: window.siyuan.config.readonly,
-                click() {
-                    openWechatNotify(nodeElement);
-                }
-            }).element);
-        }
         if (type !== "NodeThematicBreak" && !window.siyuan.config.readonly) {
             window.siyuan.menus.menu.append(new MenuItem({
                 label: window.siyuan.languages.quickMakeCard,

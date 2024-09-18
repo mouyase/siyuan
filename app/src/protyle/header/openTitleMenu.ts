@@ -110,13 +110,6 @@ export const openTitleMenu = (protyle: IProtyle, position: IPosition) => {
             }
         }).element);
         if (!window.siyuan.config.readonly) {
-            window.siyuan.menus.menu.append(new MenuItem({
-                label: window.siyuan.languages.wechatReminder,
-                icon: "iconMp",
-                click() {
-                    openFileWechatNotify(protyle);
-                }
-            }).element);
             const riffCardMenu: IMenu[] = [{
                 iconHTML: "",
                 label: window.siyuan.languages.spaceRepetition,

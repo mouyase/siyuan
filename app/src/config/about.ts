@@ -57,22 +57,6 @@ export const about = {
 </label>
 <label class="b3-label fn__flex">
     <div class="fn__flex-1">
-        ${window.siyuan.languages.googleAnalytics}
-        <div class="b3-label__text">${window.siyuan.languages.googleAnalyticsTip}</div>
-    </div>
-    <div class="fn__space"></div>
-    <input class="b3-switch fn__flex-center" id="googleAnalytics" type="checkbox"${window.siyuan.config.system.disableGoogleAnalytics ? "" : " checked"}>
-</label>
-<label class="b3-label fn__flex">
-    <div class="fn__flex-1">
-        ${window.siyuan.languages.about9}
-        <div class="b3-label__text">${window.siyuan.languages.about10}</div>
-    </div>
-    <div class="fn__space"></div>
-    <input class="b3-switch fn__flex-center" id="uploadErrLog" type="checkbox"${window.siyuan.config.system.uploadErrLog ? " checked" : ""}>
-</label>
-<label class="b3-label fn__flex">
-    <div class="fn__flex-1">
         ${window.siyuan.languages.about11}
         <div class="b3-label__text">${window.siyuan.languages.about12}</div>
     </div>

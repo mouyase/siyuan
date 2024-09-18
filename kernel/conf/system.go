@@ -48,11 +48,13 @@ type System struct {
 
 func NewSystem() *System {
 	return &System{
-		ID:                 util.GetDeviceID(),
-		Name:               util.GetDeviceName(),
-		KernelVersion:      util.Ver,
-		NetworkProxy:       &NetworkProxy{},
-		DownloadInstallPkg: true,
+		ID:                     util.GetDeviceID(),
+		Name:                   util.GetDeviceName(),
+		KernelVersion:          util.Ver,
+		NetworkProxy:           &NetworkProxy{},
+		DownloadInstallPkg:     true,
+		DisableGoogleAnalytics: true,
+		UploadErrLog:           false,
 	}
 }
 

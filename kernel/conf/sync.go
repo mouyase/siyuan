@@ -36,7 +36,7 @@ func NewSync() *Sync {
 		Perception:          false,
 		Mode:                1,
 		GenerateConflictDoc: false,
-		Provider:            ProviderSiYuan,
+		Provider:            ProviderS3,
 	}
 }
 

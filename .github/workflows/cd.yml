@@ -1,16 +1,16 @@
 name: CD For SiYuan
 
 on:
-  push:
-    tags:
-      - '*-dev*'
+  # push:
+  #   tags:
+  #     - '*-dev*'
   workflow_dispatch:
 
 # ref https://docs.github.com/zh/actions/learn-github-actions/variables
 env:
   repo_name_android: "siyuan-android"
   repo_name: "siyuan"
-  repo_owner: "siyuan-note"
+  repo_owner: "mouyase"
   package_json: "app/package.json"
 
 jobs:
@@ -35,8 +35,6 @@ jobs:
       - id: thisLatestRelease
         uses: pozetroninc/github-action-get-latest-release@master
         with:
-          # owner: siyuan-note
-          # repo: siyuan
           repository: ${{ github.repository }}
           token: ${{ secrets.GITHUB_TOKEN }}
           excludes: prerelease, draft
@@ -79,7 +77,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: ${{ steps.release_info.outputs.release_version }}
-          tag: ${{ github.ref }}
           body: ${{ env.release_body }}
           draft: false
           prerelease: true
@@ -238,3 +235,90 @@ jobs:
         asset_name: siyuan-${{ needs.create_release.outputs.release_version }}-${{ matrix.config.suffix }}
         asset_path: ${{ github.workspace }}/go/src/github.com/${{ env.repo_owner }}/${{ env.repo_name }}/app/build/siyuan-${{ needs.create_release.outputs.version }}-${{ matrix.config.suffix }}
         asset_content_type: application/octet-stream
+
+  build_android:
+    name: Build Android
+    runs-on: ubuntu-20.04
+    needs: create_release
+
+    steps:
+      - name: Checkout Go Project
+        uses: actions/checkout@v4
+
+      - name: Checkout Android Project
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.repo_owner }}/${{ env.repo_name_android }}
+          path: android
+
+      - name: MakeDir
+        run: |
+          mkdir -p android/app/libs
+          mkdir -p android/app/src/main/assets
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: kernel/go.mod
+      - run: go version
+
+      - name: Setup GoMobile
+        run: |
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          gomobile init
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Node pnpm
+        run: npm install -g ${{ needs.create_release.outputs.packageManager }}
+
+      - name: Build Resource
+        run: |
+          mkdir amdroid
+          cd app
+          pnpm install && pnpm run build:mobile
+          zip -r ../android/app/src/main/assets/app.zip appearance/ guide/ stage/ changelogs/
+
+      - name: Build Kernel
+        run: |
+          gomobile bind --tags fts5 -ldflags '-s -w' -v -o ../android/app/libs/kernel.aar -androidapi 24 ./mobile/
+          rm ../android/app/libs/kernel-sources.jar
+        env:
+          GO111MODULE: on
+          CGO_ENABLED: 1
+
+      - name: Build Android
+        run: |
+          cd android
+          ./gradlew assembleOfficialRelease
+
+      - name: Sign Android
+        uses: Tlaster/android-sign@v1
+        with:
+          releaseDirectory: |
+            app/build/outputs/apk/official/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          output: build/release/signed
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      - name: Upload Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: siyuan-${{ needs.create_release.outputs.release_version }}-android
+          asset_path: build/release/signed/siyuan-${{ needs.create_release.outputs.version }}-official-release.apk
+          asset_content_type: application/octet-stream

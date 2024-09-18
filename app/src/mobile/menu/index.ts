@@ -30,18 +30,6 @@ export const popMenu = () => {
 
 export const initRightMenu = (app: App) => {
     const menuElement = document.getElementById("menu");
-    let accountHTML = "";
-    if (window.siyuan.user && !window.siyuan.config.readonly) {
-        accountHTML = `<div class="b3-menu__item" id="menuAccount">
-    <img class="b3-menu__icon" src="${window.siyuan.user.userAvatarURL}"/>
-    <span class="b3-menu__label">${window.siyuan.user.userName}</span>
-</div>`;
-    } else if (!window.siyuan.config.readonly) {
-        accountHTML = `<div class="b3-menu__item" id="menuAccount">
-    <svg class="b3-menu__icon"><use xlink:href="#iconAccount"></use></svg><span class="b3-menu__label">${window.siyuan.languages.login}</span>
-</div>`;
-    }
-
     let aiHTML = `<div class="b3-menu__item${window.siyuan.config.readonly ? " fn__none" : ""}" id="menuAI">
         <svg class="b3-menu__icon"><use xlink:href="#iconSparkles"></use></svg><span class="b3-menu__label">AI</span>
     </div>`;
@@ -55,7 +43,6 @@ export const initRightMenu = (app: App) => {
     <span class="b3-menu__label">${window.siyuan.languages.back}</span>
 </div>
 <div class="b3-menu__items">
-    ${accountHTML}
     <div id="menuRecent" class="b3-menu__item">
         <svg class="b3-menu__icon"><use xlink:href="#iconList"></use></svg><span class="b3-menu__label">${window.siyuan.languages.recentDocs}</span>
     </div>
