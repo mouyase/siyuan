@@ -227,16 +227,16 @@ func addCustomEmoji(name string, items *[]map[string]interface{}) {
 }
 
 func checkUpdate(c *gin.Context) {
-	ret := gulu.Ret.NewResult()
-	defer c.JSON(http.StatusOK, ret)
+	// ret := gulu.Ret.NewResult()
+	// defer c.JSON(http.StatusOK, ret)
 
-	arg, ok := util.JsonArg(c, ret)
-	if !ok {
-		return
-	}
+	// arg, ok := util.JsonArg(c, ret)
+	// if !ok {
+	// 	return
+	// }
 
-	showMsg := arg["showMsg"].(bool)
-	model.CheckUpdate(showMsg)
+	// showMsg := arg["showMsg"].(bool)
+	// model.CheckUpdate(showMsg)
 	return
 }
 
