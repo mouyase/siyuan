@@ -312,6 +312,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_name: siyuan-${{ needs.create_release.outputs.release_version }}-android.apk
+          asset_name: siyuan-${{ needs.create_release.outputs.release_version }}.apk
           asset_path: ${{steps.sign_app.outputs.signedReleaseFile}}
           asset_content_type: application/octet-stream
