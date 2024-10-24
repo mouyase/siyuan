@@ -64,6 +64,11 @@ const renderProvider = (provider: number) => {
     </select>
 </div>
 <div class="b3-label b3-label--inner fn__flex">
+    <div class="fn__flex-center fn__size200">Concurrent Reqs</div>
+    <div class="fn__space"></div>
+    <input id="s3ConcurrentReqs" class="b3-text-field fn__block" type="number" min="1" max="16" value="${window.siyuan.config.sync.s3.concurrentReqs}">
+</div>
+<div class="b3-label b3-label--inner fn__flex">
     <div class="fn__flex-1"></div>
     <button class="b3-button b3-button--outline fn__size200" data-action="purgeData">
         <svg><use xlink:href="#iconTrashcan"></use></svg>${window.siyuan.languages.purge}
@@ -114,6 +119,11 @@ const renderProvider = (provider: number) => {
         <option ${window.siyuan.config.sync.webdav.skipTlsVerify ? "" : "selected"} value="false">Verify</option>
         <option ${window.siyuan.config.sync.webdav.skipTlsVerify ? "selected" : ""} value="true">Skip</option>
     </select>
+</div>
+<div class="b3-label b3-label--inner fn__flex">
+    <div class="fn__flex-center fn__size200">Concurrent Reqs</div>
+    <div class="fn__space"></div>
+    <input id="webdavConcurrentReqs" class="b3-text-field fn__block" type="number" min="1" max="16" value="${window.siyuan.config.sync.webdav.concurrentReqs}">
 </div>
 <div class="b3-label b3-label--inner fn__flex">
     <div class="fn__flex-1"></div>
@@ -229,6 +239,13 @@ const bindProviderEvent = () => {
                 if (300 < timeout) {
                     timeout = 300;
                 }
+                let concurrentReqs = parseInt((providerPanelElement.querySelector("#s3ConcurrentReqs") as HTMLInputElement).value, 10);
+                if (1 > concurrentReqs) {
+                    concurrentReqs = 1;
+                }
+                if (16 < concurrentReqs) {
+                    concurrentReqs = 16;
+                }
                 (providerPanelElement.querySelector("#timeout") as HTMLInputElement).value = timeout.toString();
                 const s3 = {
                     endpoint: (providerPanelElement.querySelector("#endpoint") as HTMLInputElement).value,
@@ -239,6 +256,7 @@ const bindProviderEvent = () => {
                     region: (providerPanelElement.querySelector("#region") as HTMLInputElement).value,
                     skipTlsVerify: (providerPanelElement.querySelector("#s3SkipTlsVerify") as HTMLInputElement).value === "true",
                     timeout: timeout,
+                    concurrentReqs: concurrentReqs,
                 };
                 fetchPost("/api/sync/setSyncProviderS3", {s3}, () => {
                     window.siyuan.config.sync.s3 = s3;
@@ -251,6 +269,13 @@ const bindProviderEvent = () => {
                 if (300 < timeout) {
                     timeout = 300;
                 }
+                let concurrentReqs = parseInt((providerPanelElement.querySelector("#webdavConcurrentReqs") as HTMLInputElement).value, 10);
+                if (1 > concurrentReqs) {
+                    concurrentReqs = 1;
+                }
+                if (16 < concurrentReqs) {
+                    concurrentReqs = 16;
+                }
                 (providerPanelElement.querySelector("#timeout") as HTMLInputElement).value = timeout.toString();
                 const webdav = {
                     endpoint: (providerPanelElement.querySelector("#endpoint") as HTMLInputElement).value,
@@ -258,6 +283,7 @@ const bindProviderEvent = () => {
                     password: (providerPanelElement.querySelector("#password") as HTMLInputElement).value,
                     skipTlsVerify: (providerPanelElement.querySelector("#webdavSkipTlsVerify") as HTMLInputElement).value === "true",
                     timeout: timeout,
+                    concurrentReqs: concurrentReqs,
                 };
                 fetchPost("/api/sync/setSyncProviderWebDAV", {webdav}, () => {
                     window.siyuan.config.sync.webdav = webdav;
