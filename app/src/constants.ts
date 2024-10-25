@@ -320,7 +320,6 @@ export abstract class Constants {
             bookmark: {default: altNumber + "3", custom: altNumber + "3"},
             tag: {default: altNumber + "4", custom: altNumber + "4"},
             dailyNote: {default: altNumber + "5", custom: altNumber + "5"},
-            inbox: {default: altNumber + "6", custom: altNumber + "6"},
             backlinks: {default: altNumber + "7", custom: altNumber + "7"},
             graphView: {default: altNumber + "8", custom: altNumber + "8"},
             globalGraph: {default: altNumber + "9", custom: altNumber + "9"},
@@ -560,12 +559,6 @@ export abstract class Constants {
                     show: false,
                     icon: "iconAlignCenter",
                     hotkeyLangId: "outline",
-                }, {
-                    type: "inbox",
-                    size: {width: 320, height: 0},
-                    show: false,
-                    icon: "iconInbox",
-                    hotkeyLangId: "inbox",
                 }], [{
                     type: "bookmark",
                     size: {width: 232, height: 0},

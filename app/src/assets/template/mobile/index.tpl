@@ -31,7 +31,6 @@
         <svg data-type="sidebar-bookmark-tab" class="toolbar__icon"><use xlink:href="#iconBookmark"></use></svg>
         <svg data-type="sidebar-tag-tab" class="toolbar__icon"><use xlink:href="#iconTags"></use></svg>
         <svg data-type="sidebar-backlink-tab" class="toolbar__icon"><use xlink:href="#iconLink"></use></svg>
-        <svg data-type="sidebar-inbox-tab" class="toolbar__icon"><use xlink:href="#iconInbox"></use></svg>
         <svg data-menu="true" data-type="sidebar-plugin-tab" class="toolbar__icon"><use xlink:href="#iconPlugin"></use></svg>
         <span class="fn__flex-1"></span>
         <svg class="toolbar__icon"><use xlink:href="#iconRight"></use></svg>

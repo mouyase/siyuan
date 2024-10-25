@@ -49,11 +49,11 @@ export const commandPanel = (app: App) => {
     Object.keys(window.siyuan.config.keymap.general).forEach((key) => {
         let keys;
         /// #if MOBILE
-        keys = ["addToDatabase", "fileTree", "outline", "bookmark", "tag", "dailyNote", "inbox", "backlinks",
+        keys = ["addToDatabase", "fileTree", "outline", "bookmark", "tag", "dailyNote", "backlinks",
             "dataHistory", "editReadonly", "enter", "enterBack", "globalSearch", "lockScreen", "mainMenu", "move",
             "newFile", "recentDocs", "replace", "riffCard", "search", "selectOpen1", "syncNow"];
         /// #else
-        keys = ["addToDatabase", "fileTree", "outline", "bookmark", "tag", "dailyNote", "inbox", "backlinks",
+        keys = ["addToDatabase", "fileTree", "outline", "bookmark", "tag", "dailyNote", "backlinks",
             "graphView", "globalGraph", "closeAll", "closeLeft", "closeOthers", "closeRight", "closeTab",
             "closeUnmodified", "config", "dataHistory", "editReadonly", "enter", "enterBack", "globalSearch", "goBack",
             "goForward", "goToEditTabNext", "goToEditTabPrev", "goToTab1", "goToTab2", "goToTab3", "goToTab4",
