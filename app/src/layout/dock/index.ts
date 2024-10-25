@@ -638,13 +638,6 @@ export class Dock {
                             }
                         });
                         break;
-                    case "inbox":
-                        tab = new Tab({
-                            callback: (tab: Tab) => {
-                                tab.addModel(new Inbox(this.app, tab));
-                            }
-                        });
-                        break;
                     default:
                         tab = new Tab({
                             callback: (tab: Tab) => {
