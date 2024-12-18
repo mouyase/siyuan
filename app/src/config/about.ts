@@ -1,17 +1,17 @@
-import {Constants} from "../constants";
+import { Constants } from "../constants";
 /// #if !BROWSER
-import {ipcRenderer, shell} from "electron";
+import { ipcRenderer, shell } from "electron";
 /// #endif
-import {isBrowser} from "../util/functions";
-import {fetchPost} from "../util/fetch";
-import {setAccessAuthCode} from "./util/about";
-import {exportLayout} from "../layout/util";
-import {exitSiYuan, processSync} from "../dialog/processSystem";
-import {isInAndroid, isInHarmony, isInIOS, isIPad, isMac, openByMobile, writeText} from "../protyle/util/compatibility";
-import {showMessage} from "../dialog/message";
-import {Dialog} from "../dialog";
-import {confirmDialog} from "../dialog/confirmDialog";
-import {setKey} from "../sync/syncGuide";
+import { isBrowser } from "../util/functions";
+import { fetchPost } from "../util/fetch";
+import { setAccessAuthCode } from "./util/about";
+import { exportLayout } from "../layout/util";
+import { exitSiYuan, processSync } from "../dialog/processSystem";
+import { isInAndroid, isInHarmony, isInIOS, isIPad, isMac, openByMobile, writeText } from "../protyle/util/compatibility";
+import { showMessage } from "../dialog/message";
+import { Dialog } from "../dialog";
+import { confirmDialog } from "../dialog/confirmDialog";
+import { setKey } from "../sync/syncGuide";
 
 export const about = {
     element: undefined as Element,
@@ -200,7 +200,7 @@ ${checkUpdateHTML}
         <span style="color:var(--b3-theme-background);font-family: cursive;">会泽百家&nbsp;至公天下</span>
     </div>
     <div class='fn__hr'></div>
-    ${window.siyuan.languages.about1} ${"harmony" === window.siyuan.config.system.container? " • " + window.siyuan.languages.feedback + " 845765@qq.com" : ""} 
+    ${window.siyuan.languages.about1} ${"harmony" === window.siyuan.config.system.container ? " • " + window.siyuan.languages.feedback + " 845765@qq.com" : ""} 
 </div>`;
     },
     bindEvent: () => {
@@ -209,13 +209,13 @@ ${checkUpdateHTML}
         }
         const indexRetentionDaysElement = about.element.querySelector("#indexRetentionDays") as HTMLInputElement;
         indexRetentionDaysElement.addEventListener("change", () => {
-            fetchPost("/api/repo/setRepoIndexRetentionDays", {days: parseInt(indexRetentionDaysElement.value)}, () => {
+            fetchPost("/api/repo/setRepoIndexRetentionDays", { days: parseInt(indexRetentionDaysElement.value) }, () => {
                 window.siyuan.config.repo.indexRetentionDays = parseInt(indexRetentionDaysElement.value);
             });
         });
         const retentionIndexesDailyElement = about.element.querySelector("#retentionIndexesDaily") as HTMLInputElement;
         retentionIndexesDailyElement.addEventListener("change", () => {
-            fetchPost("/api/repo/setRetentionIndexesDaily", {indexes: parseInt(retentionIndexesDailyElement.value)}, () => {
+            fetchPost("/api/repo/setRetentionIndexesDaily", { indexes: parseInt(retentionIndexesDailyElement.value) }, () => {
                 window.siyuan.config.repo.retentionIndexesDaily = parseInt(retentionIndexesDailyElement.value);
             });
         });
@@ -224,7 +224,7 @@ ${checkUpdateHTML}
             tokenElement.select();
         });
         tokenElement.addEventListener("change", () => {
-            fetchPost("/api/system/setAPIToken", {token: tokenElement.value}, () => {
+            fetchPost("/api/system/setAPIToken", { token: tokenElement.value }, () => {
                 window.siyuan.config.api.token = tokenElement.value;
                 about.element.querySelector("#tokenTip").innerHTML = window.siyuan.languages.about14.replace("${token}", window.siyuan.config.api.token);
             });
@@ -240,7 +240,7 @@ ${checkUpdateHTML}
                 return;
             }
             updateElement.innerHTML = `<svg class="fn__rotate"><use xlink:href="#iconRefresh"></use></svg>${window.siyuan.languages.checkUpdate}`;
-            fetchPost("/api/system/checkUpdate", {showMsg: true}, () => {
+            fetchPost("/api/system/checkUpdate", { showMsg: true }, () => {
                 updateElement.innerHTML = `<svg><use xlink:href="#iconRefresh"></use></svg>${window.siyuan.languages.checkUpdate}`;
             });
         });
@@ -283,7 +283,7 @@ ${checkUpdateHTML}
                 passwordDialog.destroy();
             });
             btnsElement[1].addEventListener("click", () => {
-                fetchPost("/api/repo/importRepoKey", {key: textAreaElement.value}, (response) => {
+                fetchPost("/api/repo/importRepoKey", { key: textAreaElement.value }, (response) => {
                     window.siyuan.config.repo.key = response.data.key;
                     importKeyElement.parentElement.classList.add("fn__none");
                     importKeyElement.parentElement.nextElementSibling.classList.remove("fn__none");
@@ -328,7 +328,7 @@ ${checkUpdateHTML}
         });
         const networkServeElement = about.element.querySelector("#networkServe") as HTMLInputElement;
         networkServeElement.addEventListener("change", () => {
-            fetchPost("/api/system/setNetworkServe", {networkServe: networkServeElement.checked}, () => {
+            fetchPost("/api/system/setNetworkServe", { networkServe: networkServeElement.checked }, () => {
                 exportLayout({
                     errorExit: true,
                     cb: exitSiYuan
@@ -337,13 +337,13 @@ ${checkUpdateHTML}
         });
         const lockScreenModeElement = about.element.querySelector("#lockScreenMode") as HTMLInputElement;
         lockScreenModeElement.addEventListener("change", () => {
-            fetchPost("/api/system/setFollowSystemLockScreen", {lockScreenMode: lockScreenModeElement.checked ? 1 : 0}, () => {
+            fetchPost("/api/system/setFollowSystemLockScreen", { lockScreenMode: lockScreenModeElement.checked ? 1 : 0 }, () => {
                 window.siyuan.config.system.lockScreenMode = lockScreenModeElement.checked ? 1 : 0;
             });
         });
         const googleAnalyticsElement = about.element.querySelector("#googleAnalytics") as HTMLInputElement;
         googleAnalyticsElement.addEventListener("change", () => {
-            fetchPost("/api/system/setGoogleAnalytics", {googleAnalytics: googleAnalyticsElement.checked}, () => {
+            fetchPost("/api/system/setGoogleAnalytics", { googleAnalytics: googleAnalyticsElement.checked }, () => {
                 exportLayout({
                     errorExit: false,
                     cb() {
@@ -352,18 +352,9 @@ ${checkUpdateHTML}
                 });
             });
         });
-        const uploadErrLogElement = about.element.querySelector("#uploadErrLog") as HTMLInputElement;
-        uploadErrLogElement.addEventListener("change", () => {
-            fetchPost("/api/system/setUploadErrLog", {uploadErrLog: uploadErrLogElement.checked}, () => {
-                exportLayout({
-                    errorExit: true,
-                    cb: exitSiYuan
-                });
-            });
-        });
         const downloadInstallPkgElement = about.element.querySelector("#downloadInstallPkg") as HTMLInputElement;
         downloadInstallPkgElement.addEventListener("change", () => {
-            fetchPost("/api/system/setDownloadInstallPkg", {downloadInstallPkg: downloadInstallPkgElement.checked}, () => {
+            fetchPost("/api/system/setDownloadInstallPkg", { downloadInstallPkg: downloadInstallPkgElement.checked }, () => {
                 window.siyuan.config.system.downloadInstallPkg = downloadInstallPkgElement.checked;
             });
         });
@@ -371,7 +362,7 @@ ${checkUpdateHTML}
         const autoLaunchElement = about.element.querySelector("#autoLaunch") as HTMLInputElement;
         autoLaunchElement.addEventListener("change", () => {
             const autoLaunchMode = parseInt(autoLaunchElement.value);
-            fetchPost("/api/system/setAutoLaunch", {autoLaunch: autoLaunchMode}, () => {
+            fetchPost("/api/system/setAutoLaunch", { autoLaunch: autoLaunchMode }, () => {
                 window.siyuan.config.system.autoLaunch2 = autoLaunchMode;
                 ipcRenderer.send(Constants.SIYUAN_AUTO_LAUNCH, {
                     openAtLogin: 0 !== autoLaunchMode,
@@ -384,7 +375,7 @@ ${checkUpdateHTML}
             const scheme = (about.element.querySelector("#aboutScheme") as HTMLInputElement).value as Config.TSystemNetworkProxyScheme;
             const host = (about.element.querySelector("#aboutHost") as HTMLInputElement).value;
             const port = (about.element.querySelector("#aboutPort") as HTMLInputElement).value;
-            fetchPost("/api/system/setNetworkProxy", {scheme, host, port}, async () => {
+            fetchPost("/api/system/setNetworkProxy", { scheme, host, port }, async () => {
                 window.siyuan.config.system.networkProxy.scheme = scheme;
                 window.siyuan.config.system.networkProxy.host = host;
                 window.siyuan.config.system.networkProxy.port = port;
