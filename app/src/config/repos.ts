@@ -1,11 +1,12 @@
-import {isPaidUser, needSubscribe} from "../util/needSubscribe";
-import {fetchPost} from "../util/fetch";
-import {showMessage} from "../dialog/message";
-import {bindSyncCloudListEvent, getSyncCloudList} from "../sync/syncGuide";
-import {processSync} from "../dialog/processSystem";
-import {getCloudURL} from "./util/about";
-import {openByMobile} from "../protyle/util/compatibility";
-import {confirmDialog} from "../dialog/confirmDialog";
+import { isPaidUser, needSubscribe } from "../util/needSubscribe";
+import { fetchPost } from "../util/fetch";
+import { showMessage } from "../dialog/message";
+import { bindSyncCloudListEvent, getSyncCloudList } from "../sync/syncGuide";
+import { processSync } from "../dialog/processSystem";
+import { getCloudURL } from "./util/about";
+import { openByMobile } from "../protyle/util/compatibility";
+import { confirmDialog } from "../dialog/confirmDialog";
+import { isKernelInMobile } from "../util/functions";
 
 const renderProvider = (provider: number) => {
     if (provider === 2) {
@@ -140,6 +141,36 @@ const renderProvider = (provider: number) => {
         <svg><use xlink:href="#iconUpload"></use></svg>${window.siyuan.languages.export}
     </button>
 </div>`;
+    } else if (provider === 4) {
+        if (isKernelInMobile()) {
+            return `<div class="b3-label b3-label--inner">
+    ${window.siyuan.languages.syncThirdPartyProviderLocalIntro}
+    <div class="fn__hr"></div>
+    <em>${window.siyuan.languages.proFeature}</em>
+    <div class="fn__hr"></div>
+    ${window.siyuan.languages.deviceNotSupport}
+</div>`;
+        }
+        return `<div class="b3-label b3-label--inner">
+    ${window.siyuan.languages.syncThirdPartyProviderLocalIntro}
+    <div class="fn__hr"></div>
+    <em>${window.siyuan.languages.proFeature}</em>
+</div>
+<div class="b3-label b3-label--inner fn__flex">
+    <div class="fn__flex-center fn__size200">Endpoint</div>
+    <div class="fn__space"></div>
+    <input id="endpoint" class="b3-text-field fn__block" value="${window.siyuan.config.sync.local.endpoint}">
+</div>
+<div class="b3-label b3-label--inner fn__flex">
+    <div class="fn__flex-center fn__size200">Timeout (s)</div>
+    <div class="fn__space"></div>
+    <input id="timeout" class="b3-text-field fn__block" type="number" min="7" max="300" value="${window.siyuan.config.sync.local.timeout}">
+</div>
+<div class="b3-label b3-label--inner fn__flex">
+    <div class="fn__flex-center fn__size200">Concurrent Reqs</div>
+    <div class="fn__space"></div>
+    <input id="localConcurrentReqs" class="b3-text-field fn__block" type="number" min="1" max="1024" value="${window.siyuan.config.sync.local.concurrentReqs}">
+</div>`;
     }
     return "";
 };
@@ -258,7 +289,7 @@ const bindProviderEvent = () => {
                     timeout: timeout,
                     concurrentReqs: concurrentReqs,
                 };
-                fetchPost("/api/sync/setSyncProviderS3", {s3}, () => {
+                fetchPost("/api/sync/setSyncProviderS3", { s3 }, () => {
                     window.siyuan.config.sync.s3 = s3;
                 });
             } else if (window.siyuan.config.sync.provider === 3) {
@@ -285,8 +316,41 @@ const bindProviderEvent = () => {
                     timeout: timeout,
                     concurrentReqs: concurrentReqs,
                 };
-                fetchPost("/api/sync/setSyncProviderWebDAV", {webdav}, () => {
+                fetchPost("/api/sync/setSyncProviderWebDAV", { webdav }, () => {
                     window.siyuan.config.sync.webdav = webdav;
+                });
+            } else if (window.siyuan.config.sync.provider === 4) {
+                let timeout = parseInt((providerPanelElement.querySelector("#timeout") as HTMLInputElement).value, 10);
+                if (7 > timeout) {
+                    timeout = 7;
+                }
+                if (300 < timeout) {
+                    timeout = 300;
+                }
+                let concurrentReqs = parseInt((providerPanelElement.querySelector("#localConcurrentReqs") as HTMLInputElement).value, 10);
+                if (1 > concurrentReqs) {
+                    concurrentReqs = 1;
+                }
+                if (1024 < concurrentReqs) {
+                    concurrentReqs = 1024;
+                }
+                (providerPanelElement.querySelector("#timeout") as HTMLInputElement).value = timeout.toString();
+                const local = {
+                    endpoint: (providerPanelElement.querySelector("#endpoint") as HTMLInputElement).value,
+                    timeout: timeout,
+                    concurrentReqs: concurrentReqs,
+                };
+                fetchPost("/api/sync/setSyncProviderLocal", { local }, (response) => {
+                    if (response.code === 0) {
+                        window.siyuan.config.sync.local = response.data.local;
+
+                        const endpoint = providerPanelElement.querySelector<HTMLInputElement>("#endpoint");
+                        if (endpoint) {
+                            endpoint.value = response.data.local.endpoint;
+                        }
+                    } else {
+                        window.siyuan.config.sync.local = local;
+                    }
                 });
             }
         });
@@ -309,6 +373,7 @@ export const repos = {
     <select id="syncProvider" class="b3-select fn__flex-center fn__size200">
         <option value="2" ${window.siyuan.config.sync.provider === 2 ? "selected" : ""}>S3</option>
         <option value="3" ${window.siyuan.config.sync.provider === 3 ? "selected" : ""}>WebDAV</option>
+        <option value="4" ${window.siyuan.config.sync.provider === 4 ? "selected" : ""}>${window.siyuan.languages.localFlieSystem}</option>
     </select>
 </div>
 <div id="syncProviderPanel" class="b3-label">
@@ -400,7 +465,7 @@ export const repos = {
                 showMessage(window.siyuan.languages._kernel[123]);
                 return;
             }
-            fetchPost("/api/sync/setSyncEnable", {enabled: switchElement.checked}, () => {
+            fetchPost("/api/sync/setSyncEnable", { enabled: switchElement.checked }, () => {
                 window.siyuan.config.sync.enabled = switchElement.checked;
                 processSync();
             });
@@ -415,27 +480,27 @@ export const repos = {
                 interval = 43200;
             }
             syncIntervalElement.value = interval.toString();
-            fetchPost("/api/sync/setSyncInterval", {interval: interval}, () => {
+            fetchPost("/api/sync/setSyncInterval", { interval: interval }, () => {
                 window.siyuan.config.sync.interval = interval;
                 processSync();
             });
         });
         const syncPerceptionElement = repos.element.querySelector("#syncPerception") as HTMLInputElement;
         syncPerceptionElement.addEventListener("change", () => {
-            fetchPost("/api/sync/setSyncPerception", {enabled: syncPerceptionElement.checked}, () => {
+            fetchPost("/api/sync/setSyncPerception", { enabled: syncPerceptionElement.checked }, () => {
                 window.siyuan.config.sync.perception = syncPerceptionElement.checked;
                 processSync();
             });
         });
         const switchConflictElement = repos.element.querySelector("#generateConflictDoc") as HTMLInputElement;
         switchConflictElement.addEventListener("change", () => {
-            fetchPost("/api/sync/setSyncGenerateConflictDoc", {enabled: switchConflictElement.checked}, () => {
+            fetchPost("/api/sync/setSyncGenerateConflictDoc", { enabled: switchConflictElement.checked }, () => {
                 window.siyuan.config.sync.generateConflictDoc = switchConflictElement.checked;
             });
         });
         const syncModeElement = repos.element.querySelector("#syncMode") as HTMLSelectElement;
         syncModeElement.addEventListener("change", () => {
-            fetchPost("/api/sync/setSyncMode", {mode: parseInt(syncModeElement.value, 10)}, () => {
+            fetchPost("/api/sync/setSyncMode", { mode: parseInt(syncModeElement.value, 10) }, () => {
                 if (syncModeElement.value === "1" && window.siyuan.config.sync.provider === 0 && window.siyuan.config.system.container !== "docker") {
                     syncPerceptionElement.parentElement.classList.remove("fn__none");
                 } else {
@@ -452,7 +517,7 @@ export const repos = {
         const syncConfigElement = repos.element.querySelector("#reposCloudSyncList");
         const syncProviderElement = repos.element.querySelector("#syncProvider") as HTMLSelectElement;
         syncProviderElement.addEventListener("change", () => {
-            fetchPost("/api/sync/setSyncProvider", {provider: parseInt(syncProviderElement.value, 10)}, (response) => {
+            fetchPost("/api/sync/setSyncProvider", { provider: parseInt(syncProviderElement.value, 10) }, (response) => {
                 if (response.code === 1) {
                     showMessage(response.msg);
                     syncProviderElement.value = "0";
