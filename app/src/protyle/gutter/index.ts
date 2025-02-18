@@ -2041,6 +2041,7 @@ export class Gutter {
                 id: "ltr",
                 icon: "iconLtr",
                 label: window.siyuan.languages.ltr,
+                accelerator: window.siyuan.config.keymap.editor.general.ltr.custom,
                 click: () => {
                     this.genClick(nodeElements, protyle, (e: HTMLElement) => {
                         e.style.direction = "ltr";
@@ -2050,6 +2051,7 @@ export class Gutter {
                 id: "rtl",
                 icon: "iconRtl",
                 label: window.siyuan.languages.rtl,
+                accelerator: window.siyuan.config.keymap.editor.general.rtl.custom,
                 click: () => {
                     this.genClick(nodeElements, protyle, (e: HTMLElement) => {
                         if (!e.classList.contains("av")) {
